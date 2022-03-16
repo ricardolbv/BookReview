@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace BookReview.Domain
+namespace BookReview.Infraestructure
 {
     public class Class1
     {
