@@ -15,6 +15,6 @@ namespace BookReview.Persistence
         {
         }
 
-        DbSet<Review> Reviews;
+        DbSet<Review> Reviews { get; set; }
     }
 }

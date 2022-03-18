@@ -10,6 +10,7 @@ namespace BookReview.Domain.Entities
 {
     public class Review : AuditableEntity
     {
+        public int Id { get; set; }
         public string Text { get; set; }
         public ReviewState State { get; set; }
 

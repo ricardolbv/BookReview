@@ -11,6 +11,6 @@ namespace BookReview.Application.Contracts.Persistence
         Task<T> AddAsync(T entity);
         Task<T> UpdateAsync(T entity);
         Task<IReadOnlyList<T>> ListAllAsync();
-        Task<int> DeleteAsync(T enttty);
+        Task<int> DeleteAsync(T entity);
     }
 }
