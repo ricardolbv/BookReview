@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using BookReview.Application.Features.Reviews.Commands.CreateReview;
+using BookReview.Application.Features.Reviews.Queries.GetAllReviews;
 using BookReview.Domain.Entities;
 using System;
 using System.Collections.Generic;
@@ -14,6 +15,7 @@ namespace BookReview.Application.Profiles
         public MapperProfile()
         {
             CreateMap<Review, CreateReviewCommand>().ReverseMap();
+            CreateMap<Review, GetAllReviewsDto>().ReverseMap();
         }
     }
 }
