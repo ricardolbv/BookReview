@@ -11,7 +11,7 @@ namespace BookReview.Application.UnitTests.Mocks
 {
     public class RepositoryMocks
     {
-        public static Mock<IAsyncRepository<Review>> GetMockReviewRepository()
+        public static Mock<IReviewRepository> GetMockReviewRepository()
         {
             var reviews = new List<Review>()
             {
@@ -34,7 +34,7 @@ namespace BookReview.Application.UnitTests.Mocks
                 }
             };
 
-            var mockReviewRepository = new Mock<IAsyncRepository<Review>>();
+            var mockReviewRepository = new Mock<IReviewRepository>();
 
             mockReviewRepository.Setup(repo => repo.ListAllAsync()).ReturnsAsync(reviews);
 
