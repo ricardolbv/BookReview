@@ -3,6 +3,7 @@ using BookReview.Application.Contracts.Persistence;
 using BookReview.Application.Features.Reviews.Commands.CreateReview;
 using BookReview.Application.Profiles;
 using BookReview.Application.UnitTests.Mocks;
+using BookReview.Domain.Enums;
 using Moq;
 using Shouldly;
 using System;
@@ -47,7 +48,7 @@ namespace BookReview.Application.UnitTests.Reviews.Commands
 
             //Asserts
             reviews.Count.ShouldBe(4);
-            resp.State.ShouldNotBeSameAs("Created");
+            resp.State.ShouldBe(ReviewState.Created);
         }
     }
 }
