@@ -22,10 +22,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Reviews\Commands\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\BookReview.Application\BookReview.Application.csproj" />
     <ProjectReference Include="..\BookReview.Domain\BookReview.Domain.csproj" />
   </ItemGroup>
