@@ -32,6 +32,11 @@ namespace BookReview.Persistence.Repositories
             return 1;
         }
 
+        public async Task<T> GetByIdAsync(int Id)
+        {
+            return await _dbContext.Set<T>().FindAsync(Id);
+        }
+
         public async Task<IReadOnlyList<T>> ListAllAsync()
         {
             return await _dbContext.Set<T>().ToListAsync();
