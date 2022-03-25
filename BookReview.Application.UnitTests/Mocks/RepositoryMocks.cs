@@ -52,6 +52,18 @@ namespace BookReview.Application.UnitTests.Mocks
             mockReviewRepository.Setup(repo => repo.DeleteAsync(It.IsAny<Review>())).Callback(
                 (Review review) => reviews.RemoveAll(r => r.Id == review.Id));
 
+            mockReviewRepository.Setup(repo => repo.UpdateAsync(It.IsAny<Review>())).ReturnsAsync(
+                (Review review) =>
+                {
+                    Review _review = (Review) reviews.Where(r => r.Id == review.Id).Single();
+
+                    _review.State = review.State;
+                    _review.Text = review.Text;
+
+                    return _review;
+                });
+
+
             return mockReviewRepository;
         }
     }

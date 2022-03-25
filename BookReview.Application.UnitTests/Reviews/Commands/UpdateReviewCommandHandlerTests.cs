@@ -1,8 +1,9 @@
 ﻿using AutoMapper;
 using BookReview.Application.Contracts.Persistence;
-using BookReview.Application.Features.Reviews.Commands.DeleteReviewById;
+using BookReview.Application.Features.Reviews.Commands.UpdateReview;
 using BookReview.Application.Profiles;
 using BookReview.Application.UnitTests.Mocks;
+using BookReview.Domain.Enums;
 using Moq;
 using Shouldly;
 using System;
@@ -15,12 +16,12 @@ using Xunit;
 
 namespace BookReview.Application.UnitTests.Reviews.Commands
 {
-    public class DeleteReviewByIdCommandTests
+    public class UpdateReviewCommandHandlerTests
     {
         private readonly Mock<IReviewRepository> _repo;
         private readonly IMapper _mapper;
 
-        public DeleteReviewByIdCommandTests()
+        public UpdateReviewCommandHandlerTests()
         {
             _repo = RepositoryMocks.GetMockReviewRepository();
 
@@ -29,20 +30,19 @@ namespace BookReview.Application.UnitTests.Reviews.Commands
                 cfg.AddProfile<MapperProfile>();
             });
 
-            _mapper =  config.CreateMapper();
+            _mapper = config.CreateMapper();
         }
 
         [Fact]
-        public async Task Can_Delete_Review_By_Id()
+        public async Task Can_update_review()
         {
-            var handler = new DeleteReviewByIdCommandHandler(_mapper, _repo.Object);
-            var resp = await handler.Handle(new DeleteReviewByIdCommand { Id = 1}, CancellationToken.None);
+            var handler = new UpdateReviewCommandHandler(_repo.Object, _mapper);
+            var result = await handler.Handle(new UpdateReviewCommand { Id = 1, State = ReviewState.Working, Text = "Testing an great update" }, 
+                CancellationToken.None);
 
-            //Asserts
-            var reviews = await _repo.Object.ListAllAsync();
-
-            reviews.Count.ShouldBe(2);
-            resp.ShouldBe(1);
+            //Assert
+            result.State.ShouldBe(ReviewState.Working);
+            result.Text.ShouldBe("Testing an great update");
         }
     }
 }
