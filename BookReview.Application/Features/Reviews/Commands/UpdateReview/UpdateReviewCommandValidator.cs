@@ -17,6 +17,8 @@ namespace BookReview.Application.Features.Reviews.Commands.UpdateReview
             RuleFor(r => r.Text)
                 .NotEmpty().WithMessage("Valid text must be provided")
                 .MinimumLength(10).WithMessage("Please, keep writing your review");
+            RuleFor(r => r.State)
+                .Must(x => x >= 0).WithMessage("Valid state must be provided");
         }
     }
 }

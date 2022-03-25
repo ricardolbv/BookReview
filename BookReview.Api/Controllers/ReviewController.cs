@@ -9,6 +9,7 @@ using BookReview.Domain.Entities;
 using BookReview.Application.Features.Reviews.Commands.CreateReview;
 using BookReview.Application.Features.Reviews.Commands.DeleteReviewById;
 using BookReview.Application.Features.Reviews.Queries.GetAllReviews;
+using BookReview.Application.Features.Reviews.Commands.UpdateReview;
 
 namespace BookReview.Api.Controllers
 {
@@ -41,6 +42,13 @@ namespace BookReview.Api.Controllers
         public async Task<ActionResult<int>> DeleteReview([FromBody] DeleteReviewByIdCommand deleteReviewByIdCommand)
         {
             var response = await _mediator.Send(deleteReviewByIdCommand);
+            return Ok(response);
+        }
+
+        [HttpPut("update")]
+        public async Task<ActionResult<ReviewUpdateDto>> UpdateReview([FromBody] UpdateReviewCommand updateReviewCommand)
+        {
+            var response = await _mediator.Send(updateReviewCommand);
             return Ok(response);
         }
     }
