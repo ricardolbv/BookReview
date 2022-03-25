@@ -43,6 +43,7 @@ namespace BookReview.Application.UnitTests.Reviews.Commands
             //Assert
             result.State.ShouldBe(ReviewState.Working);
             result.Text.ShouldBe("Testing an great update");
+            result.ShouldBeOfType<ReviewUpdateDto>();
         }
     }
 }

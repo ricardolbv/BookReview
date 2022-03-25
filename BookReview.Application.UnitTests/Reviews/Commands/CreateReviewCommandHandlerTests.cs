@@ -34,7 +34,7 @@ namespace BookReview.Application.UnitTests.Reviews.Commands
         }
 
         [Fact]
-        public async Task Create_Valid_Review()
+        public async Task Can_create_review()
         {
             var handler = new CreateReviewCommandHandler(_mapper, _repo.Object);
 
@@ -48,6 +48,7 @@ namespace BookReview.Application.UnitTests.Reviews.Commands
 
             //Asserts
             reviews.Count.ShouldBe(4);
+            resp.ShouldBeOfType<CreateReviewDto>();
             resp.State.ShouldBe(ReviewState.Created);
         }
     }

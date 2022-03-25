@@ -25,7 +25,7 @@ namespace BookReview.Api.Controllers
         }
 
         [HttpPost("addReview")]
-        public async Task<ActionResult<Review>> AddReview([FromBody] CreateReviewCommand createReviewCommand)
+        public async Task<ActionResult<CreateReviewDto>> AddReview([FromBody] CreateReviewCommand createReviewCommand)
         {
             var response = await _mediator.Send(createReviewCommand);
             return Ok(response);

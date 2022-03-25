@@ -16,6 +16,7 @@ namespace BookReview.Application.Profiles
     {
         public MapperProfile()
         {
+            CreateMap<Review, CreateReviewDto>().ReverseMap();
             CreateMap<Review, ReviewUpdateDto>().ReverseMap();
             CreateMap<Review, UpdateReviewCommand>().ReverseMap();
             CreateMap<Review, DeleteReviewByIdCommand>().ReverseMap();

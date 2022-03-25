@@ -33,15 +33,16 @@ namespace BookReview.Application.UnitTests.Reviews.Commands
         }
 
         [Fact]
-        public async Task Can_Delete_Review_By_Id()
+        public async Task Can_delete_review_by_id()
         {
             var handler = new DeleteReviewByIdCommandHandler(_mapper, _repo.Object);
             var resp = await handler.Handle(new DeleteReviewByIdCommand { Id = 1}, CancellationToken.None);
 
-            //Asserts
             var reviews = await _repo.Object.ListAllAsync();
 
+            //Asserts
             reviews.Count.ShouldBe(2);
+            resp.ShouldBeOfType<int>();
             resp.ShouldBe(1);
         }
     }

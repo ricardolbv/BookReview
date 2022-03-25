@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace BookReview.Application.Features.Reviews.Commands.CreateReview
 {
-    public class CreateReviewCommandHandler : IRequestHandler<CreateReviewCommand, Review>
+    public class CreateReviewCommandHandler : IRequestHandler<CreateReviewCommand, CreateReviewDto>
     {
         private readonly IReviewRepository _reviewRepo;
         private readonly IMapper _mapper;
@@ -23,7 +23,7 @@ namespace BookReview.Application.Features.Reviews.Commands.CreateReview
             _reviewRepo = reviewRepo;
         }
 
-        public async Task<Review> Handle(CreateReviewCommand request, CancellationToken cancellationToken)
+        public async Task<CreateReviewDto> Handle(CreateReviewCommand request, CancellationToken cancellationToken)
         {
             var validator = new CreateReviewCommandValidator();
             var validationResult = validator.Validate(request);
@@ -32,8 +32,9 @@ namespace BookReview.Application.Features.Reviews.Commands.CreateReview
                 throw new ValidationException(validationResult);
 
             var _review = _mapper.Map<Review>(request);
+            await _reviewRepo.AddAsync(_review);
             
-            return await _reviewRepo.AddAsync(_review);
+            return _mapper.Map<CreateReviewDto>(_review);
         }
     }
 }
