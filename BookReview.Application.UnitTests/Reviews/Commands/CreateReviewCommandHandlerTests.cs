@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using BookReview.Application.Contracts.Persistence;
+using BookReview.Application.Exceptions;
 using BookReview.Application.Features.Reviews.Commands.CreateReview;
 using BookReview.Application.Profiles;
 using BookReview.Application.UnitTests.Mocks;
@@ -50,6 +51,34 @@ namespace BookReview.Application.UnitTests.Reviews.Commands
             reviews.Count.ShouldBe(4);
             resp.ShouldBeOfType<CreateReviewDto>();
             resp.State.ShouldBe(ReviewState.Created);
+        }
+
+       [Fact]
+       public async Task Can_not_create_review()
+        {
+            var handler = new CreateReviewCommandHandler(_mapper, _repo.Object);
+
+            var resp = handler.Handle(new CreateReviewCommand
+            {
+                Text = "To Short"
+            }, CancellationToken.None);
+
+            //Asserts
+            resp.ShouldThrow<ValidationException>();
+        }
+
+        [Fact]
+        public async Task Also_can_not_create_review()
+        {
+            var handler = new CreateReviewCommandHandler(_mapper, _repo.Object);
+
+            var resp = handler.Handle(new CreateReviewCommand
+            {
+                Text = ""
+            }, CancellationToken.None);
+
+            //Asserts
+            resp.ShouldThrow<ValidationException>();
         }
     }
 }
