@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using BookReview.Application.Contracts.Persistence;
+using BookReview.Application.Exceptions;
 using BookReview.Application.Features.Reviews.Commands.DeleteReviewById;
 using BookReview.Application.Profiles;
 using BookReview.Application.UnitTests.Mocks;
@@ -44,6 +45,16 @@ namespace BookReview.Application.UnitTests.Reviews.Commands
             reviews.Count.ShouldBe(2);
             resp.ShouldBeOfType<int>();
             resp.ShouldBe(1);
+        }
+
+        [Fact]
+        public async Task Can_not_delete_review_by_id()
+        {
+            var handler = new DeleteReviewByIdCommandHandler(_mapper, _repo.Object);
+            var resp = handler.Handle(new DeleteReviewByIdCommand { Id = 0}, CancellationToken.None);
+
+            //Asserts
+            resp.ShouldThrow<ValidationException>();
         }
     }
 }
