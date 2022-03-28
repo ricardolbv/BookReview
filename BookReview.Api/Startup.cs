@@ -13,6 +13,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using BookReview.Api.Middleware;
 
 namespace BookReview.Api
 {
@@ -53,6 +54,8 @@ namespace BookReview.Api
                 app.UseSwagger();
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "BookReview.Api v1"));
             }
+
+            app.UseCustomExceptionHandler();
 
             app.UseHttpsRedirection();
 
