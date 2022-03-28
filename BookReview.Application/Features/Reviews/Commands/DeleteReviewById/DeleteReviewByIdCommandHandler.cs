@@ -32,7 +32,10 @@ namespace BookReview.Application.Features.Reviews.Commands.DeleteReviewById
                 throw new ValidationException(result);
 
             var _review = await _reviewRepository.GetByIdAsync(request.Id);
-            //More validation for response
+            if(_review == null)
+            {
+                throw new NotFoundException(nameof(Review), request.Id);
+            }
 
             await _reviewRepository.DeleteAsync(_review);
             return 1;

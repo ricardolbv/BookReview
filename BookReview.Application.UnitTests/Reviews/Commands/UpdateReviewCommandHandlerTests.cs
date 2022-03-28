@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using BookReview.Application.Contracts.Persistence;
+using BookReview.Application.Exceptions;
 using BookReview.Application.Features.Reviews.Commands.UpdateReview;
 using BookReview.Application.Profiles;
 using BookReview.Application.UnitTests.Mocks;
@@ -45,5 +46,28 @@ namespace BookReview.Application.UnitTests.Reviews.Commands
             result.Text.ShouldBe("Testing an great update");
             result.ShouldBeOfType<ReviewUpdateDto>();
         }
+
+        [Fact]
+        public async Task Can_not_update_review()
+        {
+            var handler = new UpdateReviewCommandHandler(_repo.Object, _mapper);
+            var resp = handler.Handle(new UpdateReviewCommand { Id = 0, State = ReviewState.Working, Text = "Just a valid test teste test"},
+                CancellationToken.None);
+
+            //Asserts
+            resp.ShouldThrow<ValidationException>();
+        }
+
+        [Fact]
+        public async Task Also_can_not_update_review()
+        {
+            var handler = new UpdateReviewCommandHandler(_repo.Object, _mapper);
+            var resp = handler.Handle(new UpdateReviewCommand { Id = 1, State = ReviewState.Working, Text = "To short" },
+                CancellationToken.None);
+
+            //Asserts
+            resp.ShouldThrow<ValidationException>();
+        }
+
     }
 }
