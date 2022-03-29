@@ -49,8 +49,11 @@ namespace BookReview.Application.UnitTests.Reviews.Commands
 
             //Asserts
             reviews.Count.ShouldBe(4);
-            resp.ShouldBeOfType<CreateReviewDto>();
-            resp.State.ShouldBe(ReviewState.Created);
+            resp.ShouldBeOfType<CreateReviewCommandResponse>();
+            resp.Review.State.ShouldBe(ReviewState.Created);
+            resp.Success.ShouldBeTrue();
+            resp.Message.ShouldNotBeEmpty();
+            resp.Message.ShouldNotBeNull();
         }
 
        [Fact]
@@ -58,13 +61,15 @@ namespace BookReview.Application.UnitTests.Reviews.Commands
         {
             var handler = new CreateReviewCommandHandler(_mapper, _repo.Object);
 
-            var resp = handler.Handle(new CreateReviewCommand
+            var resp = await handler.Handle(new CreateReviewCommand
             {
                 Text = "To Short"
             }, CancellationToken.None);
 
             //Asserts
-            resp.ShouldThrow<ValidationException>();
+            resp.Success.ShouldBeFalse();
+            resp.Message.ShouldNotBeEmpty();
+            resp.Message.ShouldNotBeNull();
         }
 
         [Fact]
@@ -72,13 +77,15 @@ namespace BookReview.Application.UnitTests.Reviews.Commands
         {
             var handler = new CreateReviewCommandHandler(_mapper, _repo.Object);
 
-            var resp = handler.Handle(new CreateReviewCommand
+            var resp = await handler.Handle(new CreateReviewCommand
             {
                 Text = ""
             }, CancellationToken.None);
 
             //Asserts
-            resp.ShouldThrow<ValidationException>();
+            resp.Success.ShouldBeFalse();
+            resp.Message.ShouldNotBeEmpty();
+            resp.Message.ShouldNotBeNull();
         }
     }
 }
