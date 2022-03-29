@@ -39,7 +39,7 @@ namespace BookReview.Api.Controllers
         }
 
         [HttpDelete("delete")]
-        public async Task<ActionResult<int>> DeleteReview([FromBody] DeleteReviewByIdCommand deleteReviewByIdCommand)
+        public async Task<ActionResult<DeleteReviewByIdResponse>> DeleteReview([FromBody] DeleteReviewByIdCommand deleteReviewByIdCommand)
         {
             var response = await _mediator.Send(deleteReviewByIdCommand);
             return Ok(response);

@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace BookReview.Application.Features.Reviews.Commands.DeleteReviewById
 {
-    public class DeleteReviewByIdCommandHandler : IRequestHandler<DeleteReviewByIdCommand, int>
+    public class DeleteReviewByIdCommandHandler : IRequestHandler<DeleteReviewByIdCommand, DeleteReviewByIdResponse>
     {
         private readonly IReviewRepository _reviewRepository;
         private readonly IMapper _mapper;
@@ -23,13 +23,23 @@ namespace BookReview.Application.Features.Reviews.Commands.DeleteReviewById
             _reviewRepository = reviewRepository;
         }
 
-        public async Task<int> Handle(DeleteReviewByIdCommand request, CancellationToken cancellationToken)
+        public async Task<DeleteReviewByIdResponse> Handle(DeleteReviewByIdCommand request, CancellationToken cancellationToken)
         {
-            var validator =new DeleteReviewByIdValidator();
+            var response = new DeleteReviewByIdResponse(); 
+            var validator = new DeleteReviewByIdValidator();
             var result = await validator.ValidateAsync(request);
 
-            if (result.Errors.Count > 0)
-                throw new ValidationException(result);
+            if (result.Errors.Count > 0) 
+            {
+                response.Success = false;
+                response.Message = "Some errors while deleting was found";
+                response.Errors = new List<string>();
+
+                foreach (var error in result.Errors)
+                {
+                    response.Errors.Add(error.ErrorMessage);
+                }
+            }
 
             var _review = await _reviewRepository.GetByIdAsync(request.Id);
             if(_review == null)
@@ -37,8 +47,20 @@ namespace BookReview.Application.Features.Reviews.Commands.DeleteReviewById
                 throw new NotFoundException(nameof(Review), request.Id);
             }
 
-            await _reviewRepository.DeleteAsync(_review);
-            return 1;
+            if (response.Success)
+            {
+                try
+                {
+                    await _reviewRepository.DeleteAsync(_review);
+                    response.Message = "Review deleted with success";
+                }
+                catch (Exception ex)
+                {
+                    throw new BadRequestException(ex.Message);
+                }
+            }
+
+            return response;
         }
     }
 }

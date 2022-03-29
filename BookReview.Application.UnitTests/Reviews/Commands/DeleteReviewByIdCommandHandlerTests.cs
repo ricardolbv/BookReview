@@ -43,8 +43,10 @@ namespace BookReview.Application.UnitTests.Reviews.Commands
 
             //Asserts
             reviews.Count.ShouldBe(2);
-            resp.ShouldBeOfType<int>();
-            resp.ShouldBe(1);
+            resp.ShouldBeOfType<DeleteReviewByIdResponse>();
+            resp.Message.ShouldNotBeNull();
+            resp.Message.ShouldNotBeEmpty();
+            resp.Success.ShouldBeTrue();
         }
 
         [Fact]
@@ -54,7 +56,7 @@ namespace BookReview.Application.UnitTests.Reviews.Commands
             var resp = handler.Handle(new DeleteReviewByIdCommand { Id = 0}, CancellationToken.None);
 
             //Asserts
-            resp.ShouldThrow<ValidationException>();
+            resp.ShouldThrow<NotFoundException>();
         }
     }
 }
