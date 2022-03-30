@@ -42,9 +42,11 @@ namespace BookReview.Application.UnitTests.Reviews.Commands
                 CancellationToken.None);
 
             //Assert
-            result.State.ShouldBe(ReviewState.Working);
-            result.Text.ShouldBe("Testing an great update");
-            result.ShouldBeOfType<ReviewUpdateDto>();
+            result.Review.State.ShouldBe(ReviewState.Working);
+            result.Review.Text.ShouldBe("Testing an great update");
+            result.ShouldBeOfType<UpdateReviewReponse>();
+            result.Message.ShouldNotBeEmpty();
+            result.Message.ShouldNotBeNull();
         }
 
         [Fact]
@@ -55,18 +57,20 @@ namespace BookReview.Application.UnitTests.Reviews.Commands
                 CancellationToken.None);
 
             //Asserts
-            resp.ShouldThrow<ValidationException>();
+            resp.ShouldThrow<NotFoundException>();
         }
 
         [Fact]
         public async Task Also_can_not_update_review()
         {
             var handler = new UpdateReviewCommandHandler(_repo.Object, _mapper);
-            var resp = handler.Handle(new UpdateReviewCommand { Id = 1, State = ReviewState.Working, Text = "To short" },
+            var resp = await handler.Handle(new UpdateReviewCommand { Id = 1, State = ReviewState.Working, Text = "To short" },
                 CancellationToken.None);
 
             //Asserts
-            resp.ShouldThrow<ValidationException>();
+            resp.Message.ShouldNotBeEmpty();
+            resp.Message.ShouldNotBeNull();
+            resp.Errors.Count.ShouldBeGreaterThan(0);
         }
 
     }

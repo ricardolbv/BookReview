@@ -46,7 +46,7 @@ namespace BookReview.Api.Controllers
         }
 
         [HttpPut("update")]
-        public async Task<ActionResult<ReviewUpdateDto>> UpdateReview([FromBody] UpdateReviewCommand updateReviewCommand)
+        public async Task<ActionResult<UpdateReviewReponse>> UpdateReview([FromBody] UpdateReviewCommand updateReviewCommand)
         {
             var response = await _mediator.Send(updateReviewCommand);
             return Ok(response);

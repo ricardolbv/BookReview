@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace BookReview.Application.Features.Reviews.Commands.UpdateReview
 {
-    public class UpdateReviewCommand : IRequest<ReviewUpdateDto>
+    public class UpdateReviewCommand : IRequest<UpdateReviewReponse>
     {
         public int Id { get; set; } 
         public string Text { get; set; }

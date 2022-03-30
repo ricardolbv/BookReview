@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace BookReview.Application.Features.Reviews.Commands.UpdateReview
 {
-    public class UpdateReviewCommandHandler : IRequestHandler<UpdateReviewCommand, ReviewUpdateDto>
+    public class UpdateReviewCommandHandler : IRequestHandler<UpdateReviewCommand, UpdateReviewReponse>
     {
         private readonly IReviewRepository _reviewRepo;
         private readonly IMapper _mapper;
@@ -23,14 +23,22 @@ namespace BookReview.Application.Features.Reviews.Commands.UpdateReview
             _mapper = mapper;
         }
 
-        public async Task<ReviewUpdateDto> Handle(UpdateReviewCommand request, CancellationToken cancellationToken)
+        public async Task<UpdateReviewReponse> Handle(UpdateReviewCommand request, CancellationToken cancellationToken)
         {
+            var response = new UpdateReviewReponse();
             var validation = new UpdateReviewCommandValidator();
             var result = await validation.ValidateAsync(request);
 
             if(result.Errors.Count > 0)
             {
-                throw new ValidationException(result);
+                response.Errors = new List<string>();
+                response.Success = false;
+                response.Message = "Have some errors while updating review";
+
+                foreach(var error in result.Errors)
+                {
+                    response.Errors.Add(error.ErrorMessage);
+                }
             }
 
             var _review = await _reviewRepo.GetByIdAsync(request.Id);
@@ -39,11 +47,15 @@ namespace BookReview.Application.Features.Reviews.Commands.UpdateReview
                 throw new NotFoundException(nameof(Review), request.Id);
             }
 
-            _mapper.Map(request, _review, typeof(UpdateReviewCommand), typeof(Review));
+            if (response.Success)
+            {
+                _mapper.Map(request, _review, typeof(UpdateReviewCommand), typeof(Review));
+                var _response = await _reviewRepo.UpdateAsync(_review);
+                response.Review = _mapper.Map<ReviewUpdateDto>(_response);
+                response.Message = "Review updated";
+            }
 
-            var response = await _reviewRepo.UpdateAsync(_review);
-
-            return _mapper.Map<ReviewUpdateDto>(response);
+            return response;
         }
     }
 }
