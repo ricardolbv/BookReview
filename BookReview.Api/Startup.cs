@@ -14,6 +14,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using BookReview.Api.Middleware;
+using BookReview.Infraestructure;
 
 namespace BookReview.Api
 {
@@ -30,7 +31,7 @@ namespace BookReview.Api
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddApplicationServices();
-            //services.AddInfrastructureServices(Configuration);
+            services.AddInfraServices();
             services.AddPersistenceServices(Configuration);
 
             services.AddControllers();

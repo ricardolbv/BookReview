@@ -1,5 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,6 +10,7 @@ using BookReview.Application.Features.Reviews.Commands.CreateReview;
 using BookReview.Application.Features.Reviews.Commands.DeleteReviewById;
 using BookReview.Application.Features.Reviews.Queries.GetAllReviews;
 using BookReview.Application.Features.Reviews.Commands.UpdateReview;
+using BookReview.Application.Features.Reviews.Queries.ExportAllReviews;
 
 namespace BookReview.Api.Controllers
 {
@@ -50,6 +51,14 @@ namespace BookReview.Api.Controllers
         {
             var response = await _mediator.Send(updateReviewCommand);
             return Ok(response);
+        }
+
+        [HttpGet("export")]
+        public async Task<FileResult> ExportReviews()
+        {
+            var fileDto = await _mediator.Send(new ExportReviewQuery());
+
+            return File(fileDto.Data, fileDto.ContentType, fileDto.FileName);
         }
     }
 }

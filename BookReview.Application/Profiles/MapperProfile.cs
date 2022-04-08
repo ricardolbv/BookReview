@@ -2,6 +2,7 @@
 using BookReview.Application.Features.Reviews.Commands.CreateReview;
 using BookReview.Application.Features.Reviews.Commands.DeleteReviewById;
 using BookReview.Application.Features.Reviews.Commands.UpdateReview;
+using BookReview.Application.Features.Reviews.Queries.ExportAllReviews;
 using BookReview.Application.Features.Reviews.Queries.GetAllReviews;
 using BookReview.Domain.Entities;
 using System;
@@ -16,6 +17,7 @@ namespace BookReview.Application.Profiles
     {
         public MapperProfile()
         {
+            CreateMap<Review, ExportReviewDto>().ReverseMap();
             CreateMap<Review, CreateReviewDto>().ReverseMap();
             CreateMap<Review, ReviewUpdateDto>().ReverseMap();
             CreateMap<Review, UpdateReviewCommand>().ReverseMap();

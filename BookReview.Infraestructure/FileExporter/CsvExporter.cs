@@ -17,7 +17,7 @@ namespace BookReview.Infraestructure.FileExporter
             using var memoryStream = new MemoryStream();
             using (var streamWriter = new StreamWriter(memoryStream))
             {
-                using var csvWriter = new CsvWriter(streamWriter, null);
+                using var csvWriter = new CsvWriter(streamWriter);
                 csvWriter.WriteRecords(exportReviewsDtos);
             }
 
