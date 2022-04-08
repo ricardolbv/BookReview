@@ -16,12 +16,12 @@ using Shouldly;
 
 namespace BookReview.Application.UnitTests.Reviews.Queries
 {
-    public class GetAllReviewsQueryTests
+    public class GetAllReviewsQueryHandlerTests
     {
         private readonly Mock<IReviewRepository> _repo;
         private readonly IMapper _mapper;
 
-        public GetAllReviewsQueryTests()
+        public GetAllReviewsQueryHandlerTests()
         {
             _repo = RepositoryMocks.GetMockReviewRepository();
 

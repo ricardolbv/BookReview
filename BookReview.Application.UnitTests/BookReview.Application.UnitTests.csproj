@@ -24,6 +24,7 @@
   <ItemGroup>
     <ProjectReference Include="..\BookReview.Application\BookReview.Application.csproj" />
     <ProjectReference Include="..\BookReview.Domain\BookReview.Domain.csproj" />
+    <ProjectReference Include="..\BookReview.Infraestructure\BookReview.Infraestructure.csproj" />
   </ItemGroup>
 
 </Project>
