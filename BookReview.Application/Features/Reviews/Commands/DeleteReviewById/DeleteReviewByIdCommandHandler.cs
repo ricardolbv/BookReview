@@ -3,6 +3,7 @@ using BookReview.Application.Contracts.Persistence;
 using BookReview.Application.Exceptions;
 using BookReview.Domain.Entities;
 using MediatR;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,11 +17,13 @@ namespace BookReview.Application.Features.Reviews.Commands.DeleteReviewById
     {
         private readonly IReviewRepository _reviewRepository;
         private readonly IMapper _mapper;
+        private readonly ILogger<DeleteReviewByIdCommandHandler> _logger;
 
-        public DeleteReviewByIdCommandHandler(IMapper mapper, IReviewRepository reviewRepository)
+        public DeleteReviewByIdCommandHandler(IMapper mapper, IReviewRepository reviewRepository, ILogger<DeleteReviewByIdCommandHandler> logger)
         {
             _mapper = mapper;
             _reviewRepository = reviewRepository;
+            _logger = logger;
         }
 
         public async Task<DeleteReviewByIdResponse> Handle(DeleteReviewByIdCommand request, CancellationToken cancellationToken)
@@ -39,11 +42,15 @@ namespace BookReview.Application.Features.Reviews.Commands.DeleteReviewById
                 {
                     response.Errors.Add(error.ErrorMessage);
                 }
+
+                _logger.LogError($"Could not delete the review, errors: {response.Errors}");
             }
 
             var _review = await _reviewRepository.GetByIdAsync(request.Id);
             if(_review == null)
             {
+                _logger.LogInformation($"Could not found the following review id {request.Id}");
+
                 throw new NotFoundException(nameof(Review), request.Id);
             }
 
@@ -53,9 +60,13 @@ namespace BookReview.Application.Features.Reviews.Commands.DeleteReviewById
                 {
                     await _reviewRepository.DeleteAsync(_review);
                     response.Message = "Review deleted with success";
+
+                    _logger.LogInformation($"Review with the id {request.Id} was deleted");
                 }
                 catch (Exception ex)
                 {
+                    _logger.LogError($"Could not delete the review {request.Id} due the error {ex.Message}");
+
                     throw new BadRequestException(ex.Message);
                 }
             }

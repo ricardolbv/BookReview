@@ -5,6 +5,8 @@ using BookReview.Application.Features.Reviews.Commands.UpdateReview;
 using BookReview.Application.Profiles;
 using BookReview.Application.UnitTests.Mocks;
 using BookReview.Domain.Enums;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
 using Shouldly;
 using System;
@@ -21,6 +23,7 @@ namespace BookReview.Application.UnitTests.Reviews.Commands
     {
         private readonly Mock<IReviewRepository> _repo;
         private readonly IMapper _mapper;
+        private readonly ILogger<UpdateReviewCommandHandler> _logger;
 
         public UpdateReviewCommandHandlerTests()
         {
@@ -32,12 +35,13 @@ namespace BookReview.Application.UnitTests.Reviews.Commands
             });
 
             _mapper = config.CreateMapper();
+            _logger = new NullLogger<UpdateReviewCommandHandler>();
         }
 
         [Fact]
         public async Task Can_update_review()
         {
-            var handler = new UpdateReviewCommandHandler(_repo.Object, _mapper);
+            var handler = new UpdateReviewCommandHandler(_repo.Object, _mapper, _logger);
             var result = await handler.Handle(new UpdateReviewCommand { Id = 1, State = ReviewState.Working, Text = "Testing an great update" }, 
                 CancellationToken.None);
 
@@ -52,7 +56,7 @@ namespace BookReview.Application.UnitTests.Reviews.Commands
         [Fact]
         public async Task Can_not_update_review()
         {
-            var handler = new UpdateReviewCommandHandler(_repo.Object, _mapper);
+            var handler = new UpdateReviewCommandHandler(_repo.Object, _mapper, _logger);
             var resp = handler.Handle(new UpdateReviewCommand { Id = 0, State = ReviewState.Working, Text = "Just a valid test teste test"},
                 CancellationToken.None);
 
@@ -63,7 +67,7 @@ namespace BookReview.Application.UnitTests.Reviews.Commands
         [Fact]
         public async Task Also_can_not_update_review()
         {
-            var handler = new UpdateReviewCommandHandler(_repo.Object, _mapper);
+            var handler = new UpdateReviewCommandHandler(_repo.Object, _mapper, _logger);
             var resp = await handler.Handle(new UpdateReviewCommand { Id = 1, State = ReviewState.Working, Text = "To short" },
                 CancellationToken.None);
 

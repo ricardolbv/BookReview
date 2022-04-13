@@ -3,6 +3,7 @@ using BookReview.Application.Contracts.Persistence;
 using BookReview.Application.Exceptions;
 using BookReview.Domain.Entities;
 using MediatR;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,11 +17,13 @@ namespace BookReview.Application.Features.Reviews.Commands.UpdateReview
     {
         private readonly IReviewRepository _reviewRepo;
         private readonly IMapper _mapper;
+        private readonly ILogger<UpdateReviewCommandHandler> _logger;
 
-        public UpdateReviewCommandHandler(IReviewRepository reviewRepo, IMapper mapper)
+        public UpdateReviewCommandHandler(IReviewRepository reviewRepo, IMapper mapper, ILogger<UpdateReviewCommandHandler> logger)
         {
             _reviewRepo = reviewRepo;
             _mapper = mapper;
+            _logger = logger;
         }
 
         public async Task<UpdateReviewReponse> Handle(UpdateReviewCommand request, CancellationToken cancellationToken)
@@ -39,11 +42,15 @@ namespace BookReview.Application.Features.Reviews.Commands.UpdateReview
                 {
                     response.Errors.Add(error.ErrorMessage);
                 }
+
+                _logger.LogInformation($"Could not update the review: {request.Id} due the validation errors: {response.Errors}");
             }
 
             var _review = await _reviewRepo.GetByIdAsync(request.Id);
             if(_review == null)
             {
+                _logger.LogInformation($"Could not found the review: {request.Id} for performing update");
+
                 throw new NotFoundException(nameof(Review), request.Id);
             }
 
@@ -53,6 +60,8 @@ namespace BookReview.Application.Features.Reviews.Commands.UpdateReview
                 var _response = await _reviewRepo.UpdateAsync(_review);
                 response.Review = _mapper.Map<ReviewUpdateDto>(_response);
                 response.Message = "Review updated";
+
+                _logger.LogInformation($"Review id: {request.Id} was updated");
             }
 
             return response;

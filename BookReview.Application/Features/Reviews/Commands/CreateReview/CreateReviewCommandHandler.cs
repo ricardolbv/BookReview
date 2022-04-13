@@ -3,6 +3,7 @@ using BookReview.Application.Contracts.Persistence;
 using BookReview.Application.Exceptions;
 using BookReview.Domain.Entities;
 using MediatR;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,11 +17,13 @@ namespace BookReview.Application.Features.Reviews.Commands.CreateReview
     {
         private readonly IReviewRepository _reviewRepo;
         private readonly IMapper _mapper;
+        private readonly ILogger<CreateReviewCommandHandler> _logger;
 
-        public CreateReviewCommandHandler(IMapper mapper, IReviewRepository reviewRepo)
+        public CreateReviewCommandHandler(IMapper mapper, IReviewRepository reviewRepo, ILogger<CreateReviewCommandHandler> logger)
         {
             _mapper = mapper;
             _reviewRepo = reviewRepo;
+            _logger = logger;
         }
 
         public async Task<CreateReviewCommandResponse> Handle(CreateReviewCommand request, CancellationToken cancellationToken)
@@ -39,6 +42,8 @@ namespace BookReview.Application.Features.Reviews.Commands.CreateReview
                 {
                     response.Errors.Add(error.ErrorMessage);
                 }
+
+                _logger.LogError($"Could not create the review due the problems {response.Errors}");
             }
 
             if (response.Success)
@@ -47,6 +52,8 @@ namespace BookReview.Application.Features.Reviews.Commands.CreateReview
                 await _reviewRepo.AddAsync(_review);
                 response.Review = _mapper.Map<CreateReviewDto>(_review);
                 response.Message = "Review Created";
+
+                _logger.LogInformation($"Creating the review with the infos: {_review}");
             }
             
             return response;

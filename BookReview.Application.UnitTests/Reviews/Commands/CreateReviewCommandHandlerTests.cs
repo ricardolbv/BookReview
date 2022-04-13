@@ -5,6 +5,8 @@ using BookReview.Application.Features.Reviews.Commands.CreateReview;
 using BookReview.Application.Profiles;
 using BookReview.Application.UnitTests.Mocks;
 using BookReview.Domain.Enums;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
 using Shouldly;
 using System;
@@ -21,6 +23,7 @@ namespace BookReview.Application.UnitTests.Reviews.Commands
     {
         private readonly Mock<IReviewRepository> _repo;
         private readonly IMapper _mapper;
+        private readonly ILogger<CreateReviewCommandHandler> _logger;
 
         public CreateReviewCommandHandlerTests()
         {
@@ -32,12 +35,13 @@ namespace BookReview.Application.UnitTests.Reviews.Commands
             });
 
             _mapper = config.CreateMapper();
+            _logger = new NullLogger<CreateReviewCommandHandler>();
         }
 
         [Fact]
         public async Task Can_create_review()
         {
-            var handler = new CreateReviewCommandHandler(_mapper, _repo.Object);
+            var handler = new CreateReviewCommandHandler(_mapper, _repo.Object, _logger);
 
             var resp = await handler.Handle(new CreateReviewCommand()
             {
@@ -59,7 +63,7 @@ namespace BookReview.Application.UnitTests.Reviews.Commands
        [Fact]
        public async Task Can_not_create_review()
         {
-            var handler = new CreateReviewCommandHandler(_mapper, _repo.Object);
+            var handler = new CreateReviewCommandHandler(_mapper, _repo.Object, _logger);
 
             var resp = await handler.Handle(new CreateReviewCommand
             {
@@ -75,7 +79,7 @@ namespace BookReview.Application.UnitTests.Reviews.Commands
         [Fact]
         public async Task Also_can_not_create_review()
         {
-            var handler = new CreateReviewCommandHandler(_mapper, _repo.Object);
+            var handler = new CreateReviewCommandHandler(_mapper, _repo.Object, _logger);
 
             var resp = await handler.Handle(new CreateReviewCommand
             {

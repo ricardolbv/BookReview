@@ -5,6 +5,8 @@ using BookReview.Application.Features.Reviews.Queries.ExportAllReviews;
 using BookReview.Application.Profiles;
 using BookReview.Application.UnitTests.Mocks;
 using BookReview.Infraestructure.FileExporter;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
 using Shouldly;
 using System;
@@ -22,6 +24,7 @@ namespace BookReview.Application.UnitTests.Reviews.Queries
         private readonly ICsvExporter _csvExporter;
         private readonly Mock<IReviewRepository> _reviewRepo;
         private readonly IMapper _mapper;
+        private readonly ILogger<ExportReviewQueryHandler> _logger;
 
         public ExportReviewQueryHandlerTests()
         {
@@ -33,12 +36,13 @@ namespace BookReview.Application.UnitTests.Reviews.Queries
 
             _mapper = config.CreateMapper();
             _csvExporter = new CsvExporter();
+            _logger = new NullLogger<ExportReviewQueryHandler>();
         }
 
         [Fact]
         public async Task Should_generate_a_valid_report()
         {
-            var handler = new ExportReviewQueryHandler(_mapper, _csvExporter, _reviewRepo.Object);
+            var handler = new ExportReviewQueryHandler(_mapper, _csvExporter, _reviewRepo.Object, _logger);
             var resp = await handler.Handle(new ExportReviewQuery(), CancellationToken.None);
 
             //Asserts

@@ -4,6 +4,8 @@ using BookReview.Application.Exceptions;
 using BookReview.Application.Features.Reviews.Commands.DeleteReviewById;
 using BookReview.Application.Profiles;
 using BookReview.Application.UnitTests.Mocks;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
 using Shouldly;
 using System;
@@ -20,6 +22,7 @@ namespace BookReview.Application.UnitTests.Reviews.Commands
     {
         private readonly Mock<IReviewRepository> _repo;
         private readonly IMapper _mapper;
+        private readonly ILogger<DeleteReviewByIdCommandHandler> _logger;
 
         public DeleteReviewByIdCommandHandlerTests()
         {
@@ -31,12 +34,13 @@ namespace BookReview.Application.UnitTests.Reviews.Commands
             });
 
             _mapper =  config.CreateMapper();
+            _logger = new NullLogger<DeleteReviewByIdCommandHandler>();
         }
 
         [Fact]
         public async Task Can_delete_review_by_id()
         {
-            var handler = new DeleteReviewByIdCommandHandler(_mapper, _repo.Object);
+            var handler = new DeleteReviewByIdCommandHandler(_mapper, _repo.Object, _logger);
             var resp = await handler.Handle(new DeleteReviewByIdCommand { Id = 1}, CancellationToken.None);
 
             var reviews = await _repo.Object.ListAllAsync();
@@ -52,7 +56,7 @@ namespace BookReview.Application.UnitTests.Reviews.Commands
         [Fact]
         public async Task Can_not_delete_review_by_id()
         {
-            var handler = new DeleteReviewByIdCommandHandler(_mapper, _repo.Object);
+            var handler = new DeleteReviewByIdCommandHandler(_mapper, _repo.Object, _logger);
             var resp = handler.Handle(new DeleteReviewByIdCommand { Id = 0}, CancellationToken.None);
 
             //Asserts
