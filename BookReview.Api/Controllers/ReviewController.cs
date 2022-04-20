@@ -11,18 +11,21 @@ using BookReview.Application.Features.Reviews.Commands.DeleteReviewById;
 using BookReview.Application.Features.Reviews.Queries.GetAllReviews;
 using BookReview.Application.Features.Reviews.Commands.UpdateReview;
 using BookReview.Application.Features.Reviews.Queries.ExportAllReviews;
+using Microsoft.Extensions.Logging;
 
 namespace BookReview.Api.Controllers
 {
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("api/review")]
     public class ReviewController : ControllerBase
     {
         private readonly IMediator _mediator;
+        private readonly ILogger<ReviewController> _logger;
 
-        public ReviewController(IMediator mediator)
+        public ReviewController(IMediator mediator, ILogger<ReviewController> logger)
         {
             _mediator = mediator;
+            _logger = logger;
         }
 
         [HttpPost("addReview")]
@@ -35,8 +38,8 @@ namespace BookReview.Api.Controllers
         [HttpGet("all")]
         public async Task<ActionResult<List<GetAllReviewsDto>>> GetAll()
         {
-            var response = await _mediator.Send(new GetAllReviewsQuery());
-            return Ok(response);
+                var response = await _mediator.Send(new GetAllReviewsQuery());
+                return Ok(response);
         }
 
         [HttpDelete("delete")]

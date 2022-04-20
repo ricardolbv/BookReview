@@ -32,37 +32,46 @@ namespace BookReview.Application.Features.Reviews.Commands.UpdateReview
             var validation = new UpdateReviewCommandValidator();
             var result = await validation.ValidateAsync(request);
 
-            if(result.Errors.Count > 0)
+            try
             {
-                response.Errors = new List<string>();
-                response.Success = false;
-                response.Message = "Have some errors while updating review";
-
-                foreach(var error in result.Errors)
+                if (result.Errors.Count > 0)
                 {
-                    response.Errors.Add(error.ErrorMessage);
+                    response.Errors = new List<string>();
+                    response.Success = false;
+                    response.Message = "Have some errors while updating review";
+
+                    foreach (var error in result.Errors)
+                    {
+                        response.Errors.Add(error.ErrorMessage);
+                    }
+
+                    _logger.LogInformation($"Could not update the review: {request.Id} due the validation errors: {response.Errors}");
                 }
 
-                _logger.LogInformation($"Could not update the review: {request.Id} due the validation errors: {response.Errors}");
-            }
+                var _review = await _reviewRepo.GetByIdAsync(request.Id);
+                if (_review == null)
+                {
+                    _logger.LogInformation($"Could not found the review: {request.Id} for performing update");
 
-            var _review = await _reviewRepo.GetByIdAsync(request.Id);
-            if(_review == null)
+                    throw new NotFoundException(nameof(Review), request.Id);
+                }
+
+                if (response.Success)
+                {
+                    _mapper.Map(request, _review, typeof(UpdateReviewCommand), typeof(Review));
+                    var _response = await _reviewRepo.UpdateAsync(_review);
+                    response.Review = _mapper.Map<ReviewUpdateDto>(_response);
+                    response.Message = "Review updated";
+
+                    _logger.LogInformation($"Review id: {request.Id} was updated");
+                }
+            }
+            catch (Exception ex)
             {
-                _logger.LogInformation($"Could not found the review: {request.Id} for performing update");
-
-                throw new NotFoundException(nameof(Review), request.Id);
+                _logger.LogError($"Some error while updating id: {request.Id} :{ex.Message}");
+                throw new BadRequestException(ex.Message);
             }
-
-            if (response.Success)
-            {
-                _mapper.Map(request, _review, typeof(UpdateReviewCommand), typeof(Review));
-                var _response = await _reviewRepo.UpdateAsync(_review);
-                response.Review = _mapper.Map<ReviewUpdateDto>(_response);
-                response.Message = "Review updated";
-
-                _logger.LogInformation($"Review id: {request.Id} was updated");
-            }
+            
 
             return response;
         }

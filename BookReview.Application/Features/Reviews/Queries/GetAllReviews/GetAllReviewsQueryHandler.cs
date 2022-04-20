@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using BookReview.Application.Contracts.Persistence;
+using BookReview.Application.Exceptions;
 using BookReview.Domain.Entities;
 using MediatR;
 using Microsoft.Extensions.Logging;
@@ -27,11 +28,20 @@ namespace BookReview.Application.Features.Reviews.Queries.GetAllReviews
 
         public async Task<List<GetAllReviewsDto>> Handle(GetAllReviewsQuery request, CancellationToken cancellationToken)
         {
-            var reviews = await _reviewRepo.ListAllAsync();
+           try
+           {
+               var reviews = await _reviewRepo.ListAllAsync();
 
-            _logger.LogInformation($"Listing all reviews {reviews}");
+               _logger.LogInformation("Listing all reviews {reviews}", reviews);
 
-            return reviews.Select(review => _mapper.Map<GetAllReviewsDto>(review)).ToList();
+               return reviews.Select(review => _mapper.Map<GetAllReviewsDto>(review)).ToList();
+            }
+           catch (Exception ex)
+           {
+               _logger.LogError(ex.Message);
+
+               throw new BadRequestException(ex.Message);
+           }
         }
     }
 }
