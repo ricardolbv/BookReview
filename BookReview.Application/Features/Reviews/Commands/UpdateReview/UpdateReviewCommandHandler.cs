@@ -72,7 +72,6 @@ namespace BookReview.Application.Features.Reviews.Commands.UpdateReview
                 throw new BadRequestException(ex.Message);
             }
             
-
             return response;
         }
     }

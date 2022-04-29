@@ -12,6 +12,8 @@ using BookReview.Application.Features.Reviews.Queries.GetAllReviews;
 using BookReview.Application.Features.Reviews.Commands.UpdateReview;
 using BookReview.Application.Features.Reviews.Queries.ExportAllReviews;
 using Microsoft.Extensions.Logging;
+using BookReview.Domain.Common;
+using BookReview.Application.Contracts.Infraestructure;
 
 namespace BookReview.Api.Controllers
 {
@@ -21,11 +23,13 @@ namespace BookReview.Api.Controllers
     {
         private readonly IMediator _mediator;
         private readonly ILogger<ReviewController> _logger;
+        private readonly IMessageBus _bus;
 
-        public ReviewController(IMediator mediator, ILogger<ReviewController> logger)
+        public ReviewController(IMediator mediator, ILogger<ReviewController> logger, IMessageBus bus)
         {
             _mediator = mediator;
             _logger = logger;
+            _bus = bus;
         }
 
         [HttpPost("addReview")]
@@ -62,6 +66,16 @@ namespace BookReview.Api.Controllers
             var fileDto = await _mediator.Send(new ExportReviewQuery());
 
             return File(fileDto.Data, fileDto.ContentType, fileDto.FileName);
+        }
+
+        [HttpPost("bus-message")]
+        public async Task<ActionResult> BusMessage()
+        {
+            var _rev = new BaseMessageBus();
+
+            await _bus.PublishMessage(_rev, "bookclassificationmessage");
+
+            return Ok();
         }
     }
 }

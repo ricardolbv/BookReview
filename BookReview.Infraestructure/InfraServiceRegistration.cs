@@ -1,5 +1,6 @@
 ﻿using BookReview.Application.Contracts.Infraestructure;
 using BookReview.Infraestructure.FileExporter;
+using BookReview.Infraestructure.ServiceBus;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
@@ -14,6 +15,7 @@ namespace BookReview.Infraestructure
         public static IServiceCollection AddInfraServices(this IServiceCollection services)
         {
             services.AddTransient<ICsvExporter, CsvExporter>();
+            services.AddSingleton<IMessageBus, AzServiceBusMessageSender>();
 
             return services;
         }
