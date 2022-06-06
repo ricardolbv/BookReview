@@ -14,6 +14,7 @@ using BookReview.Application.Features.Reviews.Queries.ExportAllReviews;
 using Microsoft.Extensions.Logging;
 using BookReview.Domain.Common;
 using BookReview.Application.Contracts.Infraestructure;
+using BookReview.Application.Features.Rating.Commands.CreateRating;
 
 namespace BookReview.Api.Controllers
 {
@@ -69,13 +70,11 @@ namespace BookReview.Api.Controllers
         }
 
         [HttpPost("bus-message")]
-        public async Task<ActionResult> BusMessage()
+        public async Task<ActionResult<CreateRatingCommandResponse>> BusMessage([FromBody] CreateRatingCommand request)
         {
-            var _rev = new BaseMessageBus();
+            var response = await _mediator.Send(request);
 
-            await _bus.PublishMessage(_rev, "bookclassificationmessage");
-
-            return Ok();
+            return Ok(response);
         }
     }
 }
